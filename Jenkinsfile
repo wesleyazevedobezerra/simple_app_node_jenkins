@@ -24,7 +24,7 @@ pipeline {
             }
         }
 
-           stage('Push') {
+           stage('Push Docker') {
             steps {
                 sh 'docker push wesleyab/simple-app-node-jenkins'
             }
