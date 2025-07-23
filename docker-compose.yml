@@ -1,0 +1,16 @@
+version: "3"
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk17 # Jenkins LTS com suporte a plugins modernos
+    ports:
+      - "8085:8080"
+      - "50000:50000"
+    user: root
+    volumes:
+      - volume_jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  volume_jenkins:
+    driver: local
