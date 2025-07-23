@@ -2,38 +2,36 @@ pipeline {
     agent any
 
     environment {
-      DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+        DOCKER_CREDENTIALS = credentials('dockerhub')
     }
 
-
     stages {
-        stage('gitclone') {
-            steps {
-               git 'https://github.com/wesleyazevedobezerra/simple_app_node_jenkins.git'
-            }
-        }
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 sh 'docker build -t simple-app-node-jenkins .'
             }
         }
 
-        stage('Login Docker') {
+        stage('Login to DockerHub') {
             steps {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                sh 'echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin'
             }
         }
 
-           stage('Push Docker') {
+        stage('Push to DockerHub') {
             steps {
+                sh 'docker tag simple-app-node-jenkins wesleyab/simple-app-node-jenkins'
                 sh 'docker push wesleyab/simple-app-node-jenkins'
             }
         }
-
     }
+
     post {
         always {
-                sh 'docker logout' 
+            // Executa logout em node com docker instalado
+            node {
+                sh 'docker logout || true'
+            }
         }
     }
 }
