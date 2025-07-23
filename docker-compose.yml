@@ -1,16 +1,22 @@
 version: "3"
+
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk17 # Jenkins LTS com suporte a plugins modernos
+    image: jenkins/jenkins:lts
+    user: root # para facilitar instalar docker cli e permissões
     ports:
       - "8085:8080"
       - "50000:50000"
-    user: root
     volumes:
-      - volume_jenkins:/var/jenkins_home
+      - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
+    command: >
+      bash -c "
+        apt-get update &&
+        apt-get install -y docker.io &&
+        service docker start || true &&
+        /usr/bin/tini -- /usr/local/bin/jenkins.sh
+      "
 
 volumes:
-  volume_jenkins:
-    driver: local
+  jenkins_home:
